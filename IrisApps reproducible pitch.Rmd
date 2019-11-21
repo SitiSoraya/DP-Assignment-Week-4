@@ -1,0 +1,123 @@
+---
+title: "Developing Data Products Week 4"
+author: "SitiSoraya"
+date: "November 21, 2019"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Introduction
+
+This is an R Markdown presentation documenting Shiny Application, called IrisApps. The application provide visualization of Iris dataset in the form of Histogram, depending on the Iris's attribute that the user select.
+
+The IrisApps can be found at: https://sitisoraya.shinyapps.io/IrisAppsV2/
+
+The ui.r and server.r are hosted on: https://github.com/SitiSoraya/DP-Assignment-Week-4
+
+## The Iris dataset
+
+```{r iris, echo = TRUE}
+summary(iris)
+```
+
+## About the IrisApps
+
+- Form of input used: radio button and slider input.
+- The ui consists of two layouts: 
+    - the sidebar panel, consists of radio buttons representing Iris's attributes, where the user can select to view in the form of histogram. The sidebar panel also consists of a slider input to specify bins range.
+    - the main panel shows the generated histogram.
+
+## ui.r code
+library(shiny)
+
+ui <- fluidPage(
+    
+    titlePanel("IrisApps"),
+    
+    sidebarLayout(
+        sidebarPanel(
+            helpText("This Apps provide visualization of Iris dataset 
+            in the form of Histogram, depending on the Iris's attribute 
+            that the user select."),
+            radioButtons("option", "Choose Iris attribute:",
+            list("Sepal.Length"='a', "Sepal.Width"='b', "Petal.Length"='c',
+            "Petal.Width"='d')),
+            sliderInput("bins", "Specify the bins range:", min = 1, max = 50, 
+            value = 30)
+        ),
+    mainPanel(mainPanel(plotOutput("distPlot")) )))
+
+```{r}
+library(shiny)
+
+# Define ui for IrisApps that draws a histogram
+ui <- fluidPage(
+    
+    titlePanel("IrisApps"),
+    
+    # Sidebar with radio buttons for attribute option and a slider input for bins range 
+    sidebarLayout(
+        sidebarPanel(
+            helpText("This Apps provide visualization of Iris dataset in the form of Histogram, depending on the Iris's attribute that the user select."),
+            
+            radioButtons("option", "Choose Iris attribute:", list("Sepal.Length"='a', "Sepal.Width"='b', "Petal.Length"='c', "Petal.Width"='d')),
+            sliderInput("bins",
+                        "Specify the bins range:",
+                        min = 1,
+                        max = 50,
+                        value = 30)
+        ),
+        
+        # Visualization of Iris Dataset through Histogram
+        mainPanel(
+            mainPanel(plotOutput("distPlot"))
+        )
+    )
+)
+```
+
+## server.r code
+server <- function(input, output) {
+    
+    output$distPlot <- renderPlot({
+        if(input$option=='a'){       
+            i<-1     }     
+        if(input$option=='b'){       
+            i<-2     }     
+        if(input$option=='c'){       
+            i<-3     }     
+        if(input$option=='d'){       
+            i<-4     }
+        
+        x    <- iris[, i] 
+        bins <- seq(min(x), max(x), length.out = input$bins + 1)
+        
+        hist(x, main = "Histogram of Iris Dataset", xlab = "Iris Attribute", 
+        ylab = "Frequency", breaks = bins, col = 'blue', border = 'white')
+    }) }
+
+```{r}
+server <- function(input, output) {
+    
+    output$distPlot <- renderPlot({
+        if(input$option=='a'){       
+            i<-1     }     
+        if(input$option=='b'){       
+            i<-2     }     
+        if(input$option=='c'){       
+            i<-3     }     
+        if(input$option=='d'){       
+            i<-4     }
+        
+        # generate bins based on input$bins from ui.R
+        x    <- iris[, i] 
+        bins <- seq(min(x), max(x), length.out = input$bins + 1)
+        
+        # draw the histogram with the specified bins range
+        hist(x, main = "Histogram of Iris Dataset", xlab = "Iris Attribute", ylab = "Frequency", breaks = bins, col = 'blue', border = 'white')
+    })
+}
+```
